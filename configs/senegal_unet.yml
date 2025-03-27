@@ -1,0 +1,49 @@
+title: "region-diff@zyh"
+seed: 43
+version: "senegal_50k_idx_hwcond2_unet_0219"
+
+trainer:
+  accelerator: "gpu"
+  devices: [1]
+  max_epochs: 200
+  val_interval: 40
+  ckpt_path: null
+
+dataset:
+  name: "senegal" # beijing, shanghai, etc.
+  data_dir: "/data1/zhangyuheng/world-traj/data/traj/user_day_senegal_feature_rank_idx.npy"
+  batch_size:
+    train: 512
+    val: 512
+  length:
+    train: null
+    val: null
+  num_workers: 4
+  pin_memory: False
+  norm: False
+
+model:
+  target: "emb"
+  noise_prior: False
+  input_dim: 2
+  output_dim: 2 # consistent with input_dim
+  resolution: 48
+  time_interval: 1800
+  weight_decay: 0.03
+  lr: 0.0005
+  lr_scheduler: "OneCycleLR" # CosineAnnealingLR, OneCycleLR
+  T_max: 200
+  metrics: ["distance", "radius", "duration", "daily_loc", "cpc"]
+  diffusion:
+    num_steps: 500
+    num_sample_steps: 100
+    beta_start: 0.0001
+    beta_end: 0.05
+  unet:
+    model_channel: 128
+    channel_mult: [1, 2, 2, 2]
+    channel_mult_emb: 4
+    channels_per_head: 64
+    num_blocks: 2
+    dropout: 0.1
+    guidance_scale: 3
